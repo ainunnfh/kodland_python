@@ -1,11 +1,59 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="utf-8">
-    <title>Website Flask Pertamaku</title>
-  </head>
-  <body>
-    <h1>Halo, Flask!</h1>
-    <p>Ini adalah halaman web pertama saya menggunakan Flask dan Python.</p>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuaca 3 Hari</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-b from-blue-100 to-blue-300 min-h-screen">
+  <div class="max-w-3xl mx-auto py-10 px-4">
+    <h1 class="text-3xl font-bold text-center text-blue-800 mb-6">Perkiraan Cuaca 3 Hari</h1>
+
+    <form method="POST" class="flex justify-center mb-8">
+      <input 
+        type="text" 
+        name="city" 
+        placeholder="Masukkan nama kota..." 
+        value="{{ city }}" 
+        class="p-3 rounded-l-lg w-64 border border-blue-400 focus:outline-none"
+      >
+      <button type="submit" class="bg-blue-600 text-white px-5 py-3 rounded-r-lg hover:bg-blue-700">
+        Cari
+      </button>
+    </form>
+
+    {% if weather_data %}
+      <div class="bg-white p-6 rounded-2xl shadow-lg">
+        <table class="w-full text-center border-collapse">
+          <thead>
+            <tr class="bg-blue-200">
+              <th class="py-2 px-3">Hari</th>
+              <th class="py-2 px-3">Tanggal</th>
+              <th class="py-2 px-3">Deskripsi</th>
+              <th class="py-2 px-3">Siang</th>
+              <th class="py-2 px-3">Malam</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for day in weather_data %}
+            <tr class="border-b hover:bg-blue-50">
+              <td class="py-3">{{ day.day }}</td>
+              <td>{{ day.date }}</td>
+              <td>
+                <img src="http://openweathermap.org/img/wn/{{ day.icon }}.png" alt="icon" class="inline w-8 h-8">
+                {{ day.description }}
+              </td>
+              <td class="text-red-600 font-semibold">{{ day.day_temp }}°C</td>
+              <td class="text-blue-600 font-semibold">{{ day.night_temp }}°C</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% elif city %}
+      <p class="text-center text-red-600 font-semibold">Kota "{{ city }}" tidak ditemukan 😢</p>
+    {% endif %}
+  </div>
+</body>
 </html>
