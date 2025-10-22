@@ -13,13 +13,33 @@ try:
 except:
     locale.setlocale(locale.LC_TIME, "id_ID")
 
-API_KEY = "8aba1313abb7e93b5bc1162c733b2d2f"
-
 # Dummy user (contoh login)
 USER = {
     "username": "admin",
     "password": "qwerty"
 }
+API_KEY = "8aba1313abb7e93b5bc1162c733b2d2f"
+users = {}
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        nick_name = request.form["nick_name"]
+        password = request.form["password"]
+        confirm_password = request.form["confirm_password"]
+
+        if not nick_name or not password or not confirm_password:
+            flash("Semua field harus diisi!", "error")
+        elif password != confirm_password:
+            flash("Password dan konfirmasi tidak sama!", "error")
+        elif nick_name in users:
+            flash("Nama pengguna sudah terdaftar!", "error")
+        else:
+            # Simpan ke dictionary sementara
+            users[nick_name] = {"password": password}
+            flash(f"Registrasi berhasil untuk {nick_name}! Silakan login.", "success")
+            return redirect(url_for("login"))
+
+    return render_template("register.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -27,7 +47,9 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        if username == USER["username"] and password == USER["password"]:
+        user = users.get(username)
+
+        if user and user["password"] == password:
             session["user"] = username
             flash("Login berhasil!", "success")
             return redirect(url_for("index"))
@@ -87,11 +109,11 @@ def index():
     return render_template("index.html", city=city, weather_data=weather_data)
 
 
-@app.route("/logout")
 def logout():
     session.pop("user", None)
-    flash("Kamu sudah logout.", "info")
+    flash("Anda telah logout.", "info")
     return redirect(url_for("login"))
+
 
 if __name__ == "__main__":
     app.run(debug=True)
