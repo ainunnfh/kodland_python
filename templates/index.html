@@ -3,10 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cuaca 3 Hari</title>
+  <title>home</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gradient-to-b from-blue-100 to-blue-300 min-h-screen">
+<body class="bg-gradient-to-b from-blue-100 to-blue-300 min-h-screen relative">
+
+  {% if weather_data %}
+  <div class="absolute bottom-4 right-6 bg-white bg-opacity-80 shadow-md rounded-xl px-4 py-2 text-sm text-blue-800 items-center">
+    <p class="font-semibold">{{ weather_data[0].day }}, {{ weather_data[0].date }}</p>
+      <p>🌤️: <span class="text-red-600 font-semibold">{{ weather_data[0].day_temp }}°C</span></p>
+      <p>🌙: <span class="text-blue-600 font-semibold">{{ weather_data[0].night_temp }}°C</span></p>
+  </div>
+  {% endif %}
+
   <div class="max-w-3xl mx-auto py-10 px-4">
     <h1 class="text-3xl font-bold text-center text-blue-800 mb-6">Perkiraan Cuaca 3 Hari</h1>
 
@@ -30,9 +39,7 @@
             <tr class="bg-blue-200">
               <th class="py-2 px-3">Hari</th>
               <th class="py-2 px-3">Tanggal</th>
-              <th class="py-2 px-3">Deskripsi</th>
-              <th class="py-2 px-3">Siang</th>
-              <th class="py-2 px-3">Malam</th>
+              <th class="py-2 px-3">Cuaca</th>
             </tr>
           </thead>
           <tbody>
@@ -44,8 +51,6 @@
                 <img src="http://openweathermap.org/img/wn/{{ day.icon }}.png" alt="icon" class="inline w-8 h-8">
                 {{ day.description }}
               </td>
-              <td class="text-red-600 font-semibold">{{ day.day_temp }}°C</td>
-              <td class="text-blue-600 font-semibold">{{ day.night_temp }}°C</td>
             </tr>
             {% endfor %}
           </tbody>
