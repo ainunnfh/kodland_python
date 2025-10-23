@@ -1,63 +1,81 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>home</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<!-- Pesan Flash -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <div id="flash-messages">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="bg-gradient-to-b from-blue-100 to-blue-300 min-h-screen relative"
+  >
+    {% include 'header.html' %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %}
+    <div id="flash-messages" class="flex justify-center mt-4">
       {% for category, message in messages %}
-        <div class="absolute flash-message mb-4 text-center text-sm p-2 rounded-lg transition-opacity duration-700
-                    {% if category == 'success' %}bg-green-100 text-green-700
-                    {% else %}bg-red-100 text-red-700{% endif %}">
-          {{ message }}
-        </div>
+      <div
+        class="flash-message mb-4 text-center text-sm p-2 px-4 rounded-lg shadow-md transition-opacity duration-700 {% if category == 'success' %}bg-green-100 text-green-700 border border-green-400 {% else %}bg-red-100 text-red-700 border border-red-400{% endif %}"
+      >
+        {{ message }}
+      </div>
       {% endfor %}
     </div>
 
     <script>
-      // Tunggu 3 detik, lalu fade out dan hilangkan elemen
+      // Pesan hilang otomatis setelah 3 detik
       setTimeout(() => {
-        document.querySelectorAll('.flash-message').forEach(el => {
-          el.classList.add('opacity-0'); // mulai fade out
-          setTimeout(() => el.remove(), 700); // hapus setelah animasi 0.7s
+        document.querySelectorAll(".flash-message").forEach((el) => {
+          el.classList.add("opacity-0"); // fade out
+          setTimeout(() => el.remove(), 700); // hapus setelah animasi
         });
-      }, 2000);
+      }, 3000);
     </script>
-  {% endif %}
-{% endwith %}
-<body class="bg-gradient-to-b from-blue-100 to-blue-300 min-h-screen relative">
-  {% include 'header.html' %}
+    {% endif %} {% endwith %} {% if weather_data %}
+    <div
+      class="absolute bottom-4 right-6 bg-white bg-opacity-80 shadow-md rounded-xl px-4 py-2 text-sm text-blue-800 items-center"
+    >
+      <p class="font-semibold">
+        {{ weather_data[0].day }}, {{ weather_data[0].date }}
+      </p>
+      <p>
+        🌤️:
+        <span class="text-red-600 font-semibold"
+          >{{ weather_data[0].day_temp }}°C</span
+        >
+      </p>
+      <p>
+        🌙:
+        <span class="text-blue-600 font-semibold"
+          >{{ weather_data[0].night_temp }}°C</span
+        >
+      </p>
+    </div>
+    {% endif %}
 
-  {% if weather_data %}
-  <div class="absolute bottom-4 right-6 bg-white bg-opacity-80 shadow-md rounded-xl px-4 py-2 text-sm text-blue-800 items-center">
-    <p class="font-semibold">{{ weather_data[0].day }}, {{ weather_data[0].date }}</p>
-      <p>🌤️: <span class="text-red-600 font-semibold">{{ weather_data[0].day_temp }}°C</span></p>
-      <p>🌙: <span class="text-blue-600 font-semibold">{{ weather_data[0].night_temp }}°C</span></p>
-  </div>
-  {% endif %}
+    <div class="max-w-3xl mx-auto py-10 px-4">
+      <h1 class="text-3xl font-bold text-center text-blue-800 mb-6">
+        Perkiraan Cuaca
+      </h1>
 
-  <div class="max-w-3xl mx-auto py-10 px-4">
-    <h1 class="text-3xl font-bold text-center text-blue-800 mb-6">Perkiraan Cuaca</h1>
+      <form method="POST" class="flex justify-center mb-8">
+        <input
+          type="text"
+          name="city"
+          placeholder="Masukkan nama kota..."
+          value="{{ city }}"
+          class="p-3 rounded-l-lg w-64 border border-blue-400 focus:outline-none"
+        />
+        <button
+          type="submit"
+          class="bg-blue-600 text-white px-5 py-3 rounded-r-lg hover:bg-blue-700"
+        >
+          Cari
+        </button>
+      </form>
 
-    <form method="POST" class="flex justify-center mb-8">
-      <input 
-        type="text" 
-        name="city" 
-        placeholder="Masukkan nama kota..." 
-        value="{{ city }}" 
-        class="p-3 rounded-l-lg w-64 border border-blue-400 focus:outline-none"
-      >
-      <button type="submit" class="bg-blue-600 text-white px-5 py-3 rounded-r-lg hover:bg-blue-700">
-        Cari
-      </button>
-    </form>
-
-    {% if weather_data %}
+      {% if weather_data %}
       <div class="bg-white p-6 rounded-2xl shadow-lg">
         <table class="w-full text-center border-collapse">
           <thead>
@@ -73,7 +91,11 @@
               <td class="py-3">{{ day.day }}</td>
               <td>{{ day.date }}</td>
               <td>
-                <img src="http://openweathermap.org/img/wn/{{ day.icon }}.png" alt="icon" class="inline w-8 h-8">
+                <img
+                  src="http://openweathermap.org/img/wn/{{ day.icon }}.png"
+                  alt="icon"
+                  class="inline w-8 h-8"
+                />
                 {{ day.description }}
               </td>
             </tr>
@@ -81,9 +103,12 @@
           </tbody>
         </table>
       </div>
-    {% elif city %}
-      <p class="text-center text-red-600 font-semibold">Kota "{{ city }}" tidak ditemukan 😢</p>
-    {% endif %}
-  </div>
-</body>
+      {% elif city %}
+      <p class="text-center text-red-600 font-semibold">
+        Kota "{{ city }}" tidak ditemukan 😢
+      </p>
+      {% endif %}
+    </div>
+  </body>
+  
 </html>
