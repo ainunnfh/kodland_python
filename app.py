@@ -7,11 +7,37 @@ import requests
 app = Flask(__name__)
 app.secret_key = "rahasia123"
 
+# Config database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mydatabase.db'  # SQLite
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://username:password@localhost/db_name'  # MySQL
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize database
+db = SQLAlchemy(app)
+
 # Atur lokal ke Bahasa Indonesia untuk nama hari
 try:
     locale.setlocale(locale.LC_TIME, "id_ID.utf8")
 except:
     locale.setlocale(locale.LC_TIME, "id_ID")
+
+quiz_data = [
+    {
+        "question": "Apa ibukota Indonesia?",
+        "options": ["Jakarta", "Bandung", "Surabaya", "Medan"],
+        "answer": "Jakarta"
+    },
+    {
+        "question": "Bahasa pemrograman mana yang digunakan untuk web frontend?",
+        "options": ["Python", "HTML", "Java", "C++"],
+        "answer": "HTML"
+    },
+    {
+        "question": "Planet terdekat dari Matahari?",
+        "options": ["Bumi", "Mars", "Merkurius", "Venus"],
+        "answer": "Merkurius"
+    }
+]
 
 # Dummy user (contoh login)
 USER = {
@@ -34,7 +60,6 @@ def register():
         elif nick_name in users:
             flash("Nama pengguna sudah terdaftar!", "error")
         else:
-            # Simpan ke dictionary sementara
             users[nick_name] = {"password": password}
             flash(f"Registrasi berhasil untuk {nick_name}! Silakan login.", "success")
             return redirect(url_for("login"))
@@ -85,7 +110,7 @@ def index():
                 day_data = data["list"][i]
                 date_obj = datetime.fromtimestamp(day_data["dt"])
                 day_name = date_obj.strftime("%A")
-                date_str = date_obj.strftime("%d %B %Y")
+                date_str = date_obj.strftime("%d-%m-%Y")
 
                 # Ambil suhu siang & malam
                 day_temp = day_data["main"]["temp_max"]
@@ -107,6 +132,38 @@ def index():
             print(f"Jumlah data diterima dari API: {len(forecast_list)}")
 
     return render_template("index.html", city=city, weather_data=weather_data)
+    
+
+@app.route("/quiz", methods=["GET", "POST"])
+def quiz():
+    if request.method == "POST":
+        user_answers = {}
+        for i, q in enumerate(quiz_data):
+            user_answers[i] = request.form.get(f"question-{i}")
+        
+        # Hitung jumlah jawaban benar
+        score = 0
+        for i, q in enumerate(quiz_data):
+            if user_answers.get(i) == q["answer"]:
+                score += 1
+        
+        flash(f"Kamu menjawab {score} dari {len(quiz_data)} pertanyaan dengan benar!", "success")
+        return redirect(url_for("quiz"))
+
+    return render_template("quiz.html", quiz_data=quiz_data)
+
+@app.route('/ranking-quiz')
+def ranking_quiz():
+    # contoh data ranking quiz
+    rankings = [
+        {"name": "Ainun", "score": 95},
+        {"name": "Budi", "score": 88},
+        {"name": "Citra", "score": 82},
+        {"name": "Dewi", "score": 75},
+    ]
+    # urutkan berdasarkan score descending
+    rankings = sorted(rankings, key=lambda x: x["score"], reverse=True)
+    return render_template("ranking-quiz.html", rankings=rankings)
 
 
 def logout():
