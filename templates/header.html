@@ -1,0 +1,23 @@
+<header class="bg-blue-600 text-white p-4">
+  <div class="container mx-auto flex justify-between items-center">
+    <!-- Logo / Brand -->
+    <div class="text-xl font-bold">
+      MyWebsite
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav>
+      <ul class="flex space-x-6">
+        <li><a href="{{ url_for('index') }}" class="hover:underline">Homepage</a></li>
+
+        {% if not user_logged_in %}
+          <li><a href="{{ url_for('register') }}" class="hover:underline">Registration</a></li>
+          <li><a href="{{ url_for('login') }}" class="hover:underline">Login</a></li>
+        {% else %}
+          <li><a href="{{ url_for('quiz') }}" class="hover:underline">Quiz</a></li>
+          <li><a href="{{ url_for('logout') }}" class="hover:underline">Logout</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+</header>
