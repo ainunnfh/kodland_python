@@ -1,55 +1,82 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Registration</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-[#2F56DB] flex items-center justify-center min-h-screen">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-[#2F56DB] flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-6">
+      <h1 class="text-2xl font-bold text-center text-blue-600 mb-6">
+        Registration
+      </h1>
 
-  <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-6">
-    <h1 class="text-2xl font-bold text-center text-blue-600 mb-6">Registration</h1>
-
-    <!-- Pesan Flash
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %}
+      <div id="flash-container">
         {% for category, message in messages %}
-          <div class="mb-4 text-center text-sm p-2 rounded-lg 
-                      {% if category == 'success' %}bg-green-100 text-green-700
-                      {% else %}bg-red-100 text-red-700{% endif %}">
-            {{ message }}
-          </div>
+        <div
+          class="flash-message mb-3 text-sm text-center p-2 rounded-lg {% if category == 'success' %} bg-green-100 text-green-700 {% elif category == 'danger' %} bg-red-100 text-red-700 {% else %} bg-red-100 text-red-700 {% endif %}"
+        >
+          {{ message }}
+        </div>
         {% endfor %}
-      {% endif %}
-    {% endwith %} -->
-
-    <form method="POST" action="{{ url_for('register') }}" class="space-y-4">
-      <div>
-        <input type="password" name="password" placeholder="Password" required
-               class="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-400">
       </div>
-      
-      <div>
-        <input type="password" name="confirm_password" placeholder="Confirm Password" required
-               class="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-400">
-      </div>
+      {% endif %} {% endwith %}
 
-      <div>
-        <input type="password" name="nick_name" placeholder="Nick Name"  required
-               class="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-400">
-      </div>
+      <form method="POST" action="{{ url_for('register') }}" class="space-y-4">
+        <div>
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            required
+            class="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
 
-      <button type="submit"
-              class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition">
-        Sign Up
-      </button>
-    </form>
-    <a href="{{ url_for('login') }}"
-   class="block text-center w-full hover:text-blue-900 text-blue-700 mt-4">
-  Already have an account? Sign In
-</a>
+        <div>
+          <input
+            type="password"
+            name="confirm_password"
+            placeholder="Confirm Password"
+            required
+            class="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
 
-  </div>
-</body>
+        <div>
+          <input
+            name="nick_name"
+            placeholder="Nick Name"
+            required
+            class="w-full border border-gray-300 p-2 rounded-md focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-lg transition"
+        >
+          Sign Up
+        </button>
+      </form>
+      <a
+        href="{{ url_for('login') }}"
+        class="block text-center w-full hover:text-blue-900 text-blue-700 mt-4"
+      >
+        Already have an account? Sign In
+      </a>
+    </div>
+    <script>
+      setTimeout(() => {
+        const flashes = document.querySelectorAll(".flash-message");
+        flashes.forEach((flash) => {
+          flash.classList.add("fade-out");
+          setTimeout(() => flash.remove(), 700);
+        });
+      }, 3000);
+    </script>
+  </body>
 </html>
