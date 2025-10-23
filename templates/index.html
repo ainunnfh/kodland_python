@@ -72,8 +72,6 @@
               <th class="py-2 px-3">Hari</th>
               <th class="py-2 px-3">Tanggal</th>
               <th class="py-2 px-3">Cuaca</th>
-              <th class="py-2 px-3">🌤️ Suhu Siang (°C)</th>
-              <th class="py-2 px-3">🌙 Suhu Malam (°C)</th>
             </tr>
           </thead>
           <tbody>
@@ -89,8 +87,6 @@
                 />
                 {{ day.description }}
               </td>
-              <td class="text-red-600 font-semibold">{{ day.day_temp }}</td>
-              <td class="text-blue-600 font-semibold">{{ day.night_temp }}</td>
             </tr>
             {% endfor %}
           </tbody>
@@ -126,5 +122,6 @@
     </div>
     {% endif %}
 
+     {% include 'footer.html' %}
   </body>
 </html>
