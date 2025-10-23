@@ -2,18 +2,18 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 from datetime import datetime, timedelta
 import locale
 import requests
-
+from flask import Flask
+from models import db, Users  # <--- ambil db dan model dari models.py
 
 app = Flask(__name__)
 app.secret_key = "rahasia123"
 
-# Config database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///mydatabase.db'  # SQLite
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://username:password@localhost/db_name'  # MySQL
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-# Initialize database
-db = SQLAlchemy(app)
+# Hubungkan app ke database
+db.init_app(app)
+
 
 # Atur lokal ke Bahasa Indonesia untuk nama hari
 try:
@@ -39,11 +39,6 @@ quiz_data = [
     }
 ]
 
-# Dummy user (contoh login)
-USER = {
-    "username": "admin",
-    "password": "qwerty"
-}
 API_KEY = "8aba1313abb7e93b5bc1162c733b2d2f"
 users = {}
 @app.route("/register", methods=["GET", "POST"])
@@ -57,14 +52,21 @@ def register():
             flash("Semua field harus diisi!", "error")
         elif password != confirm_password:
             flash("Password dan konfirmasi tidak sama!", "error")
-        elif nick_name in users:
-            flash("Nama pengguna sudah terdaftar!", "error")
         else:
-            users[nick_name] = {"password": password}
-            flash(f"Registrasi berhasil untuk {nick_name}! Silakan login.", "success")
-            return redirect(url_for("login"))
+            # Cek apakah user sudah ada di database
+            existing_user = Users.query.filter_by(nick_name=nick_name).first()
+            if existing_user:
+                flash("Nama pengguna sudah terdaftar!", "error")
+            else:
+                # Simpan user baru ke database
+                new_user = Users(nick_name=nick_name, password=password)
+                db.session.add(new_user)
+                db.session.commit()
+                flash(f"Registrasi berhasil untuk {nick_name}! Silakan login.", "success")
+                return redirect(url_for("login"))
 
     return render_template("register.html")
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -72,17 +74,19 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        user = users.get(username)
+        user = Users.query.filter_by(nick_name=username).first()
 
-        if user and user["password"] == password:
+        if user and user.password == password:
             session["user"] = username
             flash("Login berhasil!", "success")
             return redirect(url_for("index"))
         else:
             flash("Username atau password salah!", "danger")
-            return redirect(url_for("login"))
-    
+            return render_template("login.html")
+
     return render_template("login.html")
+
+
 
 # 🔹 Halaman beranda + cuaca
 @app.route("/", methods=["GET", "POST"])
