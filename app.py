@@ -23,19 +23,19 @@ except:
 
 quiz_data = [
     {
-        "question": "Apa ibukota Indonesia?",
-        "options": ["Jakarta", "Bandung", "Surabaya", "Medan"],
-        "answer": "Jakarta"
+        "question": "Library Python mana yang paling umum digunakan untuk membangun model pembelajaran mesin (Machine Learning)?",
+        "options": ["Flask", "Tensor Flow", "NumPy", "Beautiful Soup"],
+        "answer": "TensorFlow"
     },
     {
-        "question": "Bahasa pemrograman mana yang digunakan untuk web frontend?",
-        "options": ["Python", "HTML", "Java", "C++"],
-        "answer": "HTML"
+        "question": "Dalam konteks Natural Language Processing (NLP), library Python apa yang digunakan untuk memproses teks seperti tokenisasi dan stemming?",
+        "options": ["NLTK", "Open CV", "PyTorch", "Matplotlib"],
+        "answer": "NLTK"
     },
     {
-        "question": "Planet terdekat dari Matahari?",
-        "options": ["Bumi", "Mars", "Merkurius", "Venus"],
-        "answer": "Merkurius"
+        "question": "Library Python apa yang digunakan untuk komputasi numerik dan operasi pada array?",
+        "options": ["NumPy", "Seaborn", "Django", "Flask"],
+        "answer": "NumPy"
     }
 ]
 
@@ -94,9 +94,10 @@ def index():
     # Jika belum login, kembalikan ke halaman login
     if "user" not in session:
         return redirect(url_for("login"))
-
+    
     weather_data = None
     city = ""
+    username = session.get("user")
 
 
     if request.method == "POST":
@@ -116,7 +117,6 @@ def index():
                 day_name = date_obj.strftime("%A")
                 date_str = date_obj.strftime("%d-%m-%Y")
 
-                # Ambil suhu siang & malam
                 day_temp = day_data["main"]["temp_max"]
                 night_temp = day_data["main"]["temp_min"]
 
@@ -133,9 +133,9 @@ def index():
                     break
         else:
             weather_data = None
-            print(f"Jumlah data diterima dari API: {len(forecast_list)}")
+            flash(f"Kota '{city}' tidak ditemukan!", "danger")
 
-    return render_template("index.html", city=city, weather_data=weather_data)
+    return render_template("index.html", city=city, weather_data=weather_data, username=username)
     
 
 @app.route("/quiz", methods=["GET", "POST"])
@@ -170,8 +170,9 @@ def ranking_quiz():
     return render_template("ranking-quiz.html", rankings=rankings)
 
 
+@app.route("/logout")
 def logout():
-    session.pop("user", None)
+    session.pop('user', None)
     flash("Anda telah logout.", "info")
     return redirect(url_for("login"))
 
