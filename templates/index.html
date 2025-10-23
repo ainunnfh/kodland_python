@@ -6,7 +6,32 @@
   <title>home</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
+<!-- Pesan Flash -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div id="flash-messages">
+      {% for category, message in messages %}
+        <div class="absolute flash-message mb-4 text-center text-sm p-2 rounded-lg transition-opacity duration-700
+                    {% if category == 'success' %}bg-green-100 text-green-700
+                    {% else %}bg-red-100 text-red-700{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+
+    <script>
+      // Tunggu 3 detik, lalu fade out dan hilangkan elemen
+      setTimeout(() => {
+        document.querySelectorAll('.flash-message').forEach(el => {
+          el.classList.add('opacity-0'); // mulai fade out
+          setTimeout(() => el.remove(), 700); // hapus setelah animasi 0.7s
+        });
+      }, 2000);
+    </script>
+  {% endif %}
+{% endwith %}
 <body class="bg-gradient-to-b from-blue-100 to-blue-300 min-h-screen relative">
+  {% include 'header.html' %}
 
   {% if weather_data %}
   <div class="absolute bottom-4 right-6 bg-white bg-opacity-80 shadow-md rounded-xl px-4 py-2 text-sm text-blue-800 items-center">
@@ -17,7 +42,7 @@
   {% endif %}
 
   <div class="max-w-3xl mx-auto py-10 px-4">
-    <h1 class="text-3xl font-bold text-center text-blue-800 mb-6">Perkiraan Cuaca 3 Hari</h1>
+    <h1 class="text-3xl font-bold text-center text-blue-800 mb-6">Perkiraan Cuaca</h1>
 
     <form method="POST" class="flex justify-center mb-8">
       <input 
